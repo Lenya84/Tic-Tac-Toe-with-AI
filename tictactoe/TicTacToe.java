@@ -4,24 +4,26 @@ public class TicTacToe {
 
     final int FIELD_SIZE = 3;
 
-    private String[][] playingField;
+    private char[][] playingField;
     private int countX;
     private int countO;
+    private GameStatus status;
 
     TicTacToe() {
-        playingField = new String[3][3];
+        playingField = new char[3][3];
+        status = GameStatus.GAME_NOT_FINISHED;
     }
 
     public void setPlayingField(String line) {
 
         for (int i = 0; i < FIELD_SIZE; i++) {
             for (int j = 0; j < FIELD_SIZE; j++) {
-                String symbol = line.valueOf(0);
-                if ("_".equals(symbol)) {
-                    playingField[i][j] = " ";
+                char symbol = line.charAt(0);
+                if (symbol == '_') {
+                    playingField[i][j] = ' ';
                 } else {
                     playingField[i][j] = symbol;
-                    if ("X".equals(symbol)) {
+                    if (symbol == 'X') {
                         countX++;
                     } else {
                         countO++;
@@ -31,6 +33,14 @@ public class TicTacToe {
                 line = line.substring(1, line.length());
             }
         }
+    }
+
+    public GameStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(GameStatus status) {
+        this.status = status;
     }
 
     public void printPlayingField() {
@@ -46,26 +56,67 @@ public class TicTacToe {
     }
 
     public boolean isEmpty(int i, int j) {
-        if ("X".equals(playingField[i][j]) || "O".equals(playingField[i][j])) {
+        return !('X' == playingField[i][j]) && !('O' == playingField[i][j]);
+    }
+
+    public boolean tryFillCell(int x, int y) {
+        char symbol = countO == countX ? 'X' : 'O';
+        if (isEmpty(FIELD_SIZE - y, x - 1)) {
+            playingField[FIELD_SIZE - y][x - 1] = symbol;
+        } else {
             return false;
         }
 
+        if (symbol == 'X') {
+            countX++;
+        } else {
+            countO++;
+        }
+
+        updateStatus();
         return true;
     }
 
-    public void fillCell(int x, int y) {
-        String symbol = countO == countX ? "X" : "O";
-        if (isEmpty(FIELD_SIZE - y - 1, x - 1)) {
-            playingField[FIELD_SIZE - y - 1][x - 1] = symbol;
-        } else {
-            System.out.println("This cell is occupied! Choose another one!");
+
+    public boolean checkLanes(char symb) {
+        boolean cols, rows;
+
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            cols = true;
+            rows = true;
+            
+            for (int j = 0; j < FIELD_SIZE; j++) {
+                cols &= (playingField[i][j] == symb);
+                rows &= (playingField[j][i] == symb);
+            }
+            
+            if (cols || rows)
+                return true;
+        }
+        return false;
+    }
+    
+    public boolean checkDiagonals(char symb) {
+        boolean toRight = true,
+                toLeft = true;
+
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            toRight &= (playingField[i][i] == symb);
+            toLeft &= (playingField[FIELD_SIZE - i - 1][i] == symb);
         }
 
-        if ("X".equals(symbol)) {
-            countX++;
-        } else if ("O".equals(symbol)) {
-            countO++;
-        }
+        return toRight || toLeft;
     }
 
+    public void updateStatus() {
+        if (checkLanes('X') || checkDiagonals('X')) {
+            setStatus(GameStatus.X_WINS);
+        } else if (checkLanes('O') || checkDiagonals('O')) {
+            setStatus(GameStatus.O_WINS);
+        } else if (countX + countO == FIELD_SIZE * FIELD_SIZE) {
+            setStatus(GameStatus.DRAW);
+        } else {
+            setStatus(GameStatus.GAME_NOT_FINISHED);
+        }
+    }
 }
