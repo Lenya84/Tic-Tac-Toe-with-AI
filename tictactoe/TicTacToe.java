@@ -10,12 +10,15 @@ public class TicTacToe {
     private GameStatus status;
 
     TicTacToe() {
-        playingField = new char[3][3];
+        playingField = new char[][] {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
         status = GameStatus.GAME_NOT_FINISHED;
     }
 
     public void setPlayingField(String line) {
-
         for (int i = 0; i < FIELD_SIZE; i++) {
             for (int j = 0; j < FIELD_SIZE; j++) {
                 char symbol = line.charAt(0);
@@ -117,6 +120,18 @@ public class TicTacToe {
             setStatus(GameStatus.DRAW);
         } else {
             setStatus(GameStatus.GAME_NOT_FINISHED);
+        }
+    }
+
+    public void checkWinner() {
+        if (getStatus() == GameStatus.X_WINS) {
+            System.out.println("X wins");
+        } else if (getStatus() == GameStatus.O_WINS) {
+            System.out.println("O wins");
+        } else if (getStatus() == GameStatus.GAME_NOT_FINISHED) {
+            System.out.println("Game not finished");
+        } else if (getStatus() == GameStatus.DRAW) {
+            System.out.println("Draw");
         }
     }
 }
