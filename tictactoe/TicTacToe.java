@@ -3,6 +3,7 @@ package tictactoe;
 public class TicTacToe {
 
     final int FIELD_SIZE = 3;
+    final int MAX_MOVE_COUNT = FIELD_SIZE * FIELD_SIZE;
 
     private char[][] playingField;
     private int countX;
@@ -13,9 +14,17 @@ public class TicTacToe {
         playingField = new char[][] {
             {' ', ' ', ' '},
             {' ', ' ', ' '},
-            {' ', ' ', ' '}
+            {' ', ' ', ' '},
         };
         status = GameStatus.GAME_NOT_FINISHED;
+    }
+
+    public GameStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(GameStatus status) {
+        this.status = status;
     }
 
     public void setPlayingField(String line) {
@@ -33,17 +42,20 @@ public class TicTacToe {
                     }
                 }
 
-                line = line.substring(1, line.length());
+                line = line.substring(1);
             }
         }
     }
 
-    public GameStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(GameStatus status) {
-        this.status = status;
+    public void newGame() {
+        playingField = new char[][]{
+                {' ', ' ', ' '},
+                {' ', ' ', ' '},
+                {' ', ' ', ' '},
+        };
+        status = GameStatus.GAME_NOT_FINISHED;
+        countX = 0;
+        countO = 0;
     }
 
     public void printPlayingField() {
@@ -58,16 +70,15 @@ public class TicTacToe {
         System.out.println("---------");
     }
 
-    public boolean isEmpty(int i, int j) {
-        return !('X' == playingField[i][j]) && !('O' == playingField[i][j]);
+    public boolean cellIsEmpty(int x, int y) {
+        return !('X' == playingField[FIELD_SIZE - y][x - 1]) && !('O' == playingField[FIELD_SIZE - y][x - 1]);
     }
 
-    public boolean tryFillCell(int x, int y) {
+    public void fillCell(int x, int y) {
         char symbol = countO == countX ? 'X' : 'O';
-        if (isEmpty(FIELD_SIZE - y, x - 1)) {
+
+        if (cellIsEmpty(x, y)) {
             playingField[FIELD_SIZE - y][x - 1] = symbol;
-        } else {
-            return false;
         }
 
         if (symbol == 'X') {
@@ -77,9 +88,7 @@ public class TicTacToe {
         }
 
         updateStatus();
-        return true;
     }
-
 
     public boolean checkLanes(char symb) {
         boolean cols, rows;
@@ -116,14 +125,14 @@ public class TicTacToe {
             setStatus(GameStatus.X_WINS);
         } else if (checkLanes('O') || checkDiagonals('O')) {
             setStatus(GameStatus.O_WINS);
-        } else if (countX + countO == FIELD_SIZE * FIELD_SIZE) {
+        } else if (countX + countO == MAX_MOVE_COUNT) {
             setStatus(GameStatus.DRAW);
         } else {
             setStatus(GameStatus.GAME_NOT_FINISHED);
         }
     }
 
-    public void checkWinner() {
+    public void printResult() {
         if (getStatus() == GameStatus.X_WINS) {
             System.out.println("X wins");
         } else if (getStatus() == GameStatus.O_WINS) {

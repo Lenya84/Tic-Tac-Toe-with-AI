@@ -6,44 +6,34 @@ public class Main {
     public static void main(String[] args) {
         TicTacToe tictactoe = new TicTacToe();
         Scanner scanner = new Scanner(System.in);
-        Random rand = new Random(10123123);
-        int randomX;
-        int randomY;
+        Player playerX = new Player(tictactoe);
+        Player playerO = new Player(tictactoe);
 
-        tictactoe.printPlayingField();
-
-        while(true) {
-            System.out.print("Enter the coordinates: ");
-            String line = scanner.nextLine();
-
-            if (line.matches("\\d \\d")) {
-                int x = Integer.parseInt(line.substring(0, 1));
-                int y = Integer.parseInt(line.substring(2));
-
-                if (x > 0 && x < 4 && y > 0 && y < 4) {
-                    if (tictactoe.tryFillCell(x, y) && tictactoe.getStatus() == GameStatus.GAME_NOT_FINISHED) {
-                        tictactoe.printPlayingField();
-                        System.out.println("Making move level \"easy\"");
-
-                        do {
-                            randomX = rand.nextInt(3) + 1;
-                            randomY = rand.nextInt(3) + 1;
-                        } while (!tictactoe.tryFillCell(randomX, randomY));
-
-                        tictactoe.printPlayingField();
-                    } else if (tictactoe.getStatus() != GameStatus.GAME_NOT_FINISHED) {
-                        tictactoe.printPlayingField();
-                        tictactoe.checkWinner();
-                        break;
-                    } else {
-                        System.out.println("This cell is occupied! Choose another one!");
-                    }
-                } else {
-                    System.out.println("Coordinates should be from 1 to 3!");
-                }
+        while (true) {
+            String[] params = scanner.nextLine().split(" ");
+            if (params.length == 3 && "start".equals(params[0])) {
+                tictactoe.newGame();
+                playerX.setMethod(params[1]);
+                playerO.setMethod(params[2]);
+            } else if (params.length == 1 && "exit".equals(params[0])) {
+                break;
             } else {
-                System.out.println("You should enter numbers!");
+                System.out.println("Bad parameters!");
             }
+
+            while (true) {
+                playerX.move();
+                if (tictactoe.getStatus() != GameStatus.GAME_NOT_FINISHED) {
+                    break;
+                }
+                playerO.move();
+                if (tictactoe.getStatus() != GameStatus.GAME_NOT_FINISHED) {
+                    break;
+                }
+            }
+
+            tictactoe.printResult();
+
         }
     }
 }
