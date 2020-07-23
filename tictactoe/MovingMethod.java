@@ -23,27 +23,32 @@ class UserMovingMethod extends MovingMethod {
     @Override
     public void move() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the coordinates: ");
-        String line = scanner.nextLine();
-        scanner.close();
 
-        if (line.matches("\\d \\d")) {
-            int x = Integer.parseInt(line.substring(0, 1));
-            int y = Integer.parseInt(line.substring(2));
+        while (true) {
+            System.out.print("Enter the coordinates: ");
+            String line = scanner.nextLine();
 
-            if (x > 0 && x < 4 && y > 0 && y < 4) {
-                if (tictactoe.cellIsEmpty(x, y) && tictactoe.getStatus() == GameStatus.GAME_NOT_FINISHED) {
-                    tictactoe.fillCell(x, y);
-                    tictactoe.printPlayingField();
+            if (line.matches("\\d \\d")) {
+                int x = Integer.parseInt(line.substring(0, 1));
+                int y = Integer.parseInt(line.substring(2));
+
+                if (x > 0 && x < 4 && y > 0 && y < 4) {
+                    if (tictactoe.cellIsEmpty(x, y) && tictactoe.getStatus() == GameStatus.GAME_NOT_FINISHED) {
+                        tictactoe.fillCell(x, y);
+                        tictactoe.printPlayingField();
+                        break;
+                    } else {
+                        System.out.println("This cell is occupied! Choose another one!");
+                    }
                 } else {
-                    System.out.println("This cell is occupied! Choose another one!");
+                    System.out.println("Coordinates should be from 1 to 3!");
                 }
             } else {
-                System.out.println("Coordinates should be from 1 to 3!");
+                System.out.println("You should enter numbers!");
             }
-        } else {
-            System.out.println("You should enter numbers!");
         }
+
+        scanner.close();
     }
 }
 
@@ -59,7 +64,7 @@ class EasyLvlMovingMethod extends MovingMethod {
         int randomX;
         int randomY;
 
-        System.out.println("Making move level \"easy\"");
+        System.out.println("Making move level \"medium\"");
 
         while (true) {
             randomX = rand.nextInt(3) + 1;
@@ -92,6 +97,9 @@ class Player extends MovingMethod {
             case "easy":
                 setMethod(new EasyLvlMovingMethod(tictactoe));
                 break;
+            case "medium":
+                setMethod(new MediumLvlMovingMethod(tictactoe));
+                break;
             case "user":
                 setMethod(new UserMovingMethod(tictactoe));
                 break;
@@ -105,3 +113,35 @@ class Player extends MovingMethod {
         this.method.move();
     }
 }
+
+class MediumLvlMovingMethod extends MovingMethod {
+    private EasyLvlMovingMethod easyMove;
+
+    public MediumLvlMovingMethod(TicTacToe tictactoe) {
+        super(tictactoe);
+        easyMove = new EasyLvlMovingMethod(tictactoe);
+    }
+
+    public void move() {
+        char symb = tictactoe.getCountO() == tictactoe.getCountX() ? 'X' : 'O';
+
+        int[] cell = tictactoe.getWinningCell(symb);
+
+        System.out.println("Making move level \"easy\"");
+
+        if (cell != null) {
+            tictactoe.fillCell(cell[1] + 1, tictactoe.FIELD_SIZE - cell[0]);
+        } else {
+            cell = tictactoe.getWinningCell(symb == 'X' ? 'O' : 'X');
+            if (cell != null) {
+                tictactoe.fillCell(cell[1] + 1, tictactoe.FIELD_SIZE - cell[0]);
+            } else {
+                easyMove.move();
+            }
+        }
+
+        tictactoe.printPlayingField();
+    }
+}
+
+

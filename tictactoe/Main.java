@@ -21,15 +21,12 @@ public class Main {
                 System.out.println("Bad parameters!");
             }
 
-            while (true) {
+            while (tictactoe.getStatus() == GameStatus.GAME_NOT_FINISHED) {
                 playerX.move();
                 if (tictactoe.getStatus() != GameStatus.GAME_NOT_FINISHED) {
                     break;
                 }
                 playerO.move();
-                if (tictactoe.getStatus() != GameStatus.GAME_NOT_FINISHED) {
-                    break;
-                }
             }
 
             tictactoe.printResult();

@@ -27,6 +27,14 @@ public class TicTacToe {
         this.status = status;
     }
 
+    public int getCountX() {
+        return countX;
+    }
+
+    public int getCountO() {
+        return countO;
+    }
+
     public void setPlayingField(String line) {
         for (int i = 0; i < FIELD_SIZE; i++) {
             for (int j = 0; j < FIELD_SIZE; j++) {
@@ -88,6 +96,72 @@ public class TicTacToe {
         }
 
         updateStatus();
+    }
+
+
+
+    public int[] getWinningCell(char symb) {
+        int diagonalToRightCount = 0;
+        int diagonalToLeftCount = 0;
+        int rowCount = 0;
+        int colCount = 0;
+        int[] winningRowCell = null;
+        int[] winningColCell = null;
+        int[] winningDiagonalToRightCell = null;
+        int[] winningDiagonalToLeftCell = null;
+
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            if (playingField[i][i] == symb) {
+                diagonalToRightCount++;
+            }
+            if (playingField[i][i] == ' ') {
+                winningDiagonalToRightCell = new int[] {i, i};
+            }
+
+            if (playingField[FIELD_SIZE - i - 1][i] == symb) {
+                diagonalToLeftCount++;
+            }
+            if (playingField[FIELD_SIZE - i - 1][i] == ' ') {
+                winningDiagonalToLeftCell = new int[] {i, i};
+            }
+        }
+
+        if (diagonalToRightCount == 2 && winningDiagonalToRightCell != null) {
+            return winningDiagonalToRightCell;
+        } else if (diagonalToLeftCount == 2 && winningDiagonalToLeftCell != null) {
+            return winningDiagonalToLeftCell;
+        }
+
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            for (int j = 0; j < FIELD_SIZE; j++) {
+                if (playingField[i][j] == symb) {
+                    rowCount++;
+                }
+                if (playingField[i][j] == ' ') {
+                    winningRowCell = new int[]{i, j};
+                }
+
+                if (playingField[j][i] == symb) {
+                    colCount++;
+                }
+                if (playingField[j][i] == ' ') {
+                    winningColCell = new int[]{j, i};
+                }
+            }
+
+            if (rowCount == 2 && winningRowCell != null) {
+                return winningRowCell;
+            } else if (colCount == 2 && winningColCell != null) {
+                return winningColCell;
+            }
+
+            rowCount = 0;
+            colCount = 0;
+            winningRowCell = null;
+            winningColCell = null;
+        }
+
+        return null;
     }
 
     public boolean checkLanes(char symb) {
