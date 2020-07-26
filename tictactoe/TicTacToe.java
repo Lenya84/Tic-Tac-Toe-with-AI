@@ -5,7 +5,7 @@ public class TicTacToe {
     final int FIELD_SIZE = 3;
     final int MAX_MOVE_COUNT = FIELD_SIZE * FIELD_SIZE;
 
-    private char[][] playingField;
+    public char[][] playingField;
     private int countX;
     private int countO;
     private GameStatus status;
@@ -181,8 +181,38 @@ public class TicTacToe {
         }
         return false;
     }
+
+    public boolean checkLanes(char[][] playingField, char symb) {
+        boolean cols, rows;
+
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            cols = true;
+            rows = true;
+
+            for (int j = 0; j < FIELD_SIZE; j++) {
+                cols &= (playingField[i][j] == symb);
+                rows &= (playingField[j][i] == symb);
+            }
+
+            if (cols || rows)
+                return true;
+        }
+        return false;
+    }
     
     public boolean checkDiagonals(char symb) {
+        boolean toRight = true,
+                toLeft = true;
+
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            toRight &= (playingField[i][i] == symb);
+            toLeft &= (playingField[FIELD_SIZE - i - 1][i] == symb);
+        }
+
+        return toRight || toLeft;
+    }
+
+    public boolean checkDiagonals(char[][] playingField, char symb) {
         boolean toRight = true,
                 toLeft = true;
 
