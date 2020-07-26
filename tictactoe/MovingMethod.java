@@ -23,11 +23,9 @@ class UserMovingMethod extends MovingMethod {
     @Override
     public void move() {
         Scanner scanner = new Scanner(System.in);
-
+        System.out.println("Enter the coordinates: ");
         while (true) {
-            System.out.print("Enter the coordinates: ");
             String line = scanner.nextLine();
-
             if (line.matches("\\d \\d")) {
                 int x = Integer.parseInt(line.substring(0, 1));
                 int y = Integer.parseInt(line.substring(2));
@@ -35,7 +33,6 @@ class UserMovingMethod extends MovingMethod {
                 if (x > 0 && x < 4 && y > 0 && y < 4) {
                     if (tictactoe.cellIsEmpty(x, y) && tictactoe.getStatus() == GameStatus.GAME_NOT_FINISHED) {
                         tictactoe.fillCell(x, y);
-                        tictactoe.printPlayingField();
                         break;
                     } else {
                         System.out.println("This cell is occupied! Choose another one!");
@@ -47,8 +44,6 @@ class UserMovingMethod extends MovingMethod {
                 System.out.println("You should enter numbers!");
             }
         }
-
-        scanner.close();
     }
 }
 
@@ -60,11 +55,9 @@ class EasyLvlMovingMethod extends MovingMethod {
 
     @Override
     public void move() {
-        Random rand = new Random(10123123);
+        Random rand = new Random(123);
         int randomX;
         int randomY;
-
-        System.out.println("Making move level \"easy\"");
 
         while (true) {
             randomX = rand.nextInt(3) + 1;
@@ -75,8 +68,6 @@ class EasyLvlMovingMethod extends MovingMethod {
                 break;
             }
         }
-
-        tictactoe.printPlayingField();
     }
 }
 
@@ -93,8 +84,6 @@ class MediumLvlMovingMethod extends MovingMethod {
 
         int[] cell = tictactoe.getWinningCell(symb);
 
-        System.out.println("Making move level \"easy\"");
-
         if (cell != null) {
             tictactoe.fillCell(cell[1] + 1, tictactoe.FIELD_SIZE - cell[0]);
         } else {
@@ -105,8 +94,6 @@ class MediumLvlMovingMethod extends MovingMethod {
                 easyMove.move();
             }
         }
-
-        tictactoe.printPlayingField();
     }
 }
 
@@ -145,11 +132,11 @@ class HardLvlMovingMethod extends MovingMethod {
         String  status = checkWinner(playingField);
 
         if ("win".equals(status)) {
-            return 1;
+            return 10;
         } else if ("draw".equals(status)){
             return 0;
         } else if ("lose".equals(status)) {
-            return -1;
+            return -10;
         }
 
         if (myMove) {
@@ -158,7 +145,7 @@ class HardLvlMovingMethod extends MovingMethod {
                 for (int j = 0; j < 3; j++) {
                     if (playingField[i][j] == ' ') {
                         playingField[i][j] = ai;
-                        int score = minimax(playingField.clone(), false);
+                        int score = minimax(playingField, false);
                         playingField[i][j] = ' ';
                         bestScore = Math.max(score, bestScore);
                     }
@@ -171,7 +158,7 @@ class HardLvlMovingMethod extends MovingMethod {
                 for (int j = 0; j < 3; j++) {
                     if (playingField[i][j] == ' ') {
                         playingField[i][j] = human;
-                        int score = minimax(playingField.clone(), true);
+                        int score = minimax(playingField, true);
                         playingField[i][j] = ' ';
                         bestScore = Math.min(score, bestScore);
                     }
@@ -182,7 +169,6 @@ class HardLvlMovingMethod extends MovingMethod {
     }
 
     public void move() {
-        System.out.println("Making move level \"hard\"");
         ai = tictactoe.getCountO() == tictactoe.getCountX() ? 'X' : 'O';
         human = ai == 'X' ? 'O' : 'X';
         int bestScore = Integer.MIN_VALUE;
@@ -191,8 +177,9 @@ class HardLvlMovingMethod extends MovingMethod {
             for (int j = 0; j < tictactoe.FIELD_SIZE; j++) {
                 if (tictactoe.playingField[i][j] == ' ') {
                     tictactoe.playingField[i][j] = ai;
-                    int score = minimax(tictactoe.playingField.clone(), true);
+                    int score = minimax(tictactoe.playingField, false);
                     tictactoe.playingField[i][j] = ' ';
+
                     if (score > bestScore) {
                         bestScore = score;
                         bestMove = new int[]{i, j};
@@ -202,7 +189,6 @@ class HardLvlMovingMethod extends MovingMethod {
         }
 
         tictactoe.fillCell(bestMove[1] + 1, tictactoe.FIELD_SIZE - bestMove[0]);
-        tictactoe.printPlayingField();
     }
 }
 
